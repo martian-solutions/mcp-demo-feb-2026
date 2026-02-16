@@ -1,0 +1,2 @@
+mcp[cli]
+langchain-mcp-adapters
