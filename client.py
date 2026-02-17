@@ -1,33 +1,32 @@
 import asyncio
-from typing import Any
-from typing_extensions import TypedDict
 
-from langgraph.graph import StateGraph, START, END
+from langchain_core.messages import HumanMessage, AIMessage
+from langgraph.graph import StateGraph, START, END, MessagesState
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
 SERVER_URL = "http://localhost:8000/mcp"
 AUTH_TOKEN = "my-secret-token"
 
 
-class State(TypedDict):
-    history: list[dict[str, Any]]
-    response: str
+def messages_as_dicts(messages):
+    return [{"role": m.type, "content": m.content} for m in messages]
 
 
-async def call_tool(state: State, chat_tool) -> State:
-    result = await chat_tool.ainvoke({"history": state["history"]})
+async def call_tool(state: MessagesState, chat_tool) -> MessagesState:
+    history = messages_as_dicts(state["messages"])
+    result = await chat_tool.ainvoke({"history": history})
     if isinstance(result, list):
         text = result[0]["text"]
     else:
         text = result
-    return {"response": text}
+    return {"messages": [AIMessage(content=text)]}
 
 
 async def build_graph(chat_tool):
-    async def node(state: State) -> State:
+    async def node(state: MessagesState) -> MessagesState:
         return await call_tool(state, chat_tool)
 
-    graph = StateGraph(State)
+    graph = StateGraph(MessagesState)
     graph.add_node("call_tool", node)
     graph.add_edge(START, "call_tool")
     graph.add_edge("call_tool", END)
@@ -55,7 +54,7 @@ async def main():
     chat_tool = find_tool(tools, "process_chat")
     graph = await build_graph(chat_tool)
 
-    history = []
+    messages = []
     print("Chat started. Type your message (Ctrl+C to quit):")
 
     while True:
@@ -68,11 +67,11 @@ async def main():
         if not user_input:
             continue
 
-        history.append({"role": "user", "content": user_input})
-        result = await graph.ainvoke({"history": history})
-        text = result["response"]
+        messages.append(HumanMessage(content=user_input))
+        result = await graph.ainvoke({"messages": messages})
+        messages = result["messages"]
+        text = messages[-1].content
         print(f"Bot: {text}")
-        history.append({"role": "assistant", "content": text})
 
 
 if __name__ == "__main__":
