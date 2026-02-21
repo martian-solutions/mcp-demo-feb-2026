@@ -1,3 +1,4 @@
+import os
 import asyncio
 from typing import Any, List, TypedDict
 
@@ -10,7 +11,7 @@ from rich.panel import Panel
 
 console = Console()
 
-SERVER_URL = "http://localhost:8081/mcp/"
+SERVER_URL = os.getenv("SERVER_URL", "http://localhost:8081/mcp/")
 AUTH_TOKEN = "song-token"
 
 async def on_progress(progress: float, total: float | None, message: str | None, context: CallbackContext) -> None:

@@ -14,10 +14,17 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-const (
-	OllamaURL = "http://localhost:11434/api/generate"
+var (
+	OllamaURL = getEnv("OLLAMA_URL", "http://localhost:11434/api/generate")
 	ModelName = "gemma3:12b-it-qat"
 )
+
+func getEnv(key, fallback string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return fallback
+}
 
 type SongArgs struct {
 	Prompt string `json:"prompt"`

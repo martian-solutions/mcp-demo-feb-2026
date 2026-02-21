@@ -1,0 +1,24 @@
+services:
+  song-server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    environment:
+      - OLLAMA_URL=http://host.docker.internal:11434/api/generate
+    ports:
+      - "8081:8081"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  song-client:
+    build:
+      context: .
+      dockerfile: python-client/Dockerfile
+    environment:
+      - SERVER_URL=http://song-server:8081/mcp/
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    depends_on:
+      - song-server
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
