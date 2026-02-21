@@ -1,0 +1,26 @@
+# Binaries
+*_bin
+anthem_server
+server_bin
+slow_server_bin
+server_http_bin
+
+# Go
+vendor/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.pytest_cache/
+
+# Logs
+*.log
