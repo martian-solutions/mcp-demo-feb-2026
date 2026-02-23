@@ -4,8 +4,8 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.graph import StateGraph, START, END, MessagesState
 from langchain_mcp_adapters.client import MultiServerMCPClient
 
-SERVER_URL = "http://localhost:8000/mcp"
-AUTH_TOKEN = "my-secret-token"
+SERVER_URL = "http://localhost:8141/mcp"
+AUTH_TOKEN = "xxmy-secret-token"
 
 
 def messages_as_dicts(messages):
