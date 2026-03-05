@@ -81,13 +81,17 @@ def connect_chat_agent_completion(
 
     # the response is constructed from any new message nodes that are added
     # to state
-    return [
+    response = [
         {"role": "tool", "content": response, "id": uuid.uuid4().hex},
         {
             "role": "assistant",
             "content": f"Job's done, boss! {time.monotonic()} {time.monotonic_ns()}",
         },
     ]
+    response_json = json.dumps(response)
+    print(f"6----- {response}")
+    print(f"7----- {response_json}")
+    return response
 
 
 if __name__ == "__main__":
